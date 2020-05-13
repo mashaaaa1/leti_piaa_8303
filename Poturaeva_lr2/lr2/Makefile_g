@@ -1,0 +1,10 @@
+all:show
+
+show:run
+	pwd>path
+	./start
+	./show
+run:Source/greedy.cpp
+	g++ ./Source/greedy.cpp -o start
+clean:
+	rm -rf start show path

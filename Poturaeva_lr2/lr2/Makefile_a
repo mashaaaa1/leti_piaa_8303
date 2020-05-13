@@ -1,0 +1,11 @@
+
+all:show
+
+show:run
+	pwd>path
+	./start
+	./show
+run:Source/a_star.cpp
+	g++ ./Source/a_star.cpp -o start
+clean:
+	rm -rf start show path
