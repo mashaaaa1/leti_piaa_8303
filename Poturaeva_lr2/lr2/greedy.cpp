@@ -5,31 +5,32 @@
 #include <string>
 #include <string.h>
 
+
 using namespace std;
 
-struct edge//ðåáðî
+struct edge//ребро
 {
-	char str;//íà÷àëî
-	char end;//êîíåö
-	double heft;//âåñ
+	char str;//начало
+	char end;//конец
+	double heft;//вес
 };
 
-bool cmp(edge first, edge second)//ñðàâíåíèå ýëåìåíòîâ
+bool cmp(edge first, edge second)//сравнение элементов
 {
 	return first.heft < second.heft;
 }
 
-class Graph//ãðàô
+class Graph//граф
 {
 private:
-	vector <edge> graph;//ãðàô
-	vector <char> result;//êîíå÷íûé ïóòü
-	vector <char> viewingtop;//ïðîñìîòðåííûå âåðøèíû
-	char source;//íà÷àëüíàÿ âåðøèíà
-	char finish;//êîíå÷íàÿ
+	vector <edge> graph;//граф
+	vector <char> result_way;//конечный путь
+	vector <char> viewingtop;//просмотренные вершины
+	char source;//начальна¤ вершина
+	char finish;//конечна¤
 
 public:
-	Graph()//èíèöèàëèçàöèÿ ãðàôà
+	Graph()//инициализаци¤ графа
 	{
 		ofstream out;
 		char* cur = new char[200];
@@ -42,24 +43,19 @@ public:
 		out.clear();
 		out << "digraph MyGraph {\n";
 		string tmp;
-                getline(cin,tmp);
-                source=tmp[0];
-                finish=tmp[2];
-                while (getline(cin,tmp) && tmp!="")
-                {
-                        edge elem;
-                        elem.str = tmp[0];
-                        //if(!(cin >> elem.end))
-                        //      break;
-                        //if(!(cin >> elem.heft))
-                        //      break;
-                        elem.end=tmp[2];
-                        elem.heft=stod(tmp.substr(4));
-                        graph.push_back(elem); //добавление ребра
-                }
-		sort(graph.begin(), graph.end(), cmp);//ñîðòèðóåì ýëåìåíòû
+		getline(cin, tmp);
+		source = tmp[0];
+		finish = tmp[2];
+		while (getline(cin, tmp) && tmp != "")
+		{
+			edge elem;
+			elem.str = tmp[0];
+			elem.end = tmp[2];
+			elem.heft = stod(tmp.substr(4));
+			graph.push_back(elem); //добавление ребра
+		}
+		sort(graph.begin(), graph.end(), cmp);//сортируем элементы
 		for (auto i : graph) {
-			//cout << i.str << " " << i.end << " " << i.heft << endl;
 			out << "    " << i.str << " -> " << i.end << " [label=" << i.heft << "];\n";
 		}
 		out << "}\n";
@@ -67,7 +63,7 @@ public:
 		delete[] cur;
 	}
 
-	bool isViewing(char value)//ïðîâåðêà íà ïðîñîìòðåííóþ âåðøèíó
+	bool isViewing(char value)//проверка на просомтренную вершину
 	{
 		for (size_t i = 0; i < viewingtop.size(); i++)
 			if (viewingtop.at(i) == value)
@@ -75,42 +71,42 @@ public:
 		return false;
 	}
 
-	void initSearch()//íà÷àëî ïîèñêà
+	void initSearch()//начало поиска
 	{
 		if (source != finish)
 			Search(source);
 	}
 
-	bool Search(char value)//ïîèñê ìèí ïóòè
+	bool Search(char value)//поиск мин пути
 	{
-		if (value == finish)//åñëè âåðøèíà ðàâíà êîíå÷íîé
+		if (value == finish)//если вершина равна конечной
 		{
-			result.push_back(value);//äîáàâëÿåì â result
+			result_way.push_back(value);//добавл¤ем в result
 			return true;
 		}
-		viewingtop.push_back(value);//åñëè íåò òî äîáàâëÿåì â ñïèñîê ïðîñîìòðåííûõ âåðøèí
-		for (size_t i(0); i < graph.size(); i++)//ïðîõîäèì ïî ãðàôó
+		viewingtop.push_back(value);//если нет то добавл¤ем в список просомтренных вершин
+		for (size_t i(0); i < graph.size(); i++)//проходим по графу
 		{
-			if (value == graph.at(i).str)//åñëè âåðèøíà ðàâíà íà÷àëüíîé âåðøèíå ðåáðà
+			if (value == graph.at(i).str)//если веришна равна начальной вершине ребра
 			{
-				if (isViewing(graph.at(i).end))//åñëè êîíåö ðåáðà ïðîñìîòðåí òî ïåðåõîäèì ê ñëåäóþùåé èòåðàöèè öèêëà
+				if (isViewing(graph.at(i).end))//если конец ребра просмотрен то переходим к следующей итерации цикла
 					continue;
-				result.push_back(graph.at(i).str); //èíà÷å ïîìåùàåì íà÷àëî ðåáðà â result
-				bool flag = Search(graph.at(i).end); //çàïóñêàåì ïîèñê ïî êîíå÷íîé âåðøèíå
-				if (flag)//åñëè íàøëè íóæíûé ïóòü
+				result_way.push_back(graph.at(i).str); //иначе помещаем начало ребра в result
+				bool flag = Search(graph.at(i).end); //запускаем поиск по конечной вершине
+				if (flag)//если нашли нужный путь
 					return true;
-				result.pop_back();//èíà÷å óäàëÿåì ðàññìàòðèâàåìóþ âåðøèíó èç result
+				result_way.pop_back();//иначе удаляем рассматриваемую вершину из result
 			}
 		}
-		return false; //åñëè ïóòü íå íàéäåí
+		return false; //если путь не найден
 	}
 
-void Print()//ïå÷àòü ðåçóëüòàòà
+void Print()//печать результата
 	{
-		cout<<"Минимальный путь:";
-		for (size_t i(0); i < result.size(); i++)
-			cout << result.at(i);
-		cout<<endl;
+	cout << "ћинимальный путь:";
+	for (size_t i(0); i < result_way.size(); i++)
+		cout << result_way.at(i);
+	cout << endl;
 	}
 };
 
