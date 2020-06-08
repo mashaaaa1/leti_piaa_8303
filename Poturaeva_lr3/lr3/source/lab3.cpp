@@ -21,7 +21,7 @@ struct Top { //структура для хранения вершины
 	Top(char symbol) : symbol(symbol) {}
 };
 
-vector <Top> tops, viewingTop; //вектор вершин и просмотренных вершин
+ //вектор вершин и просмотренных вершин
 
 bool cmp_top(const Top& first, const Top& second) //компаратор для вершин
 {
@@ -39,7 +39,7 @@ bool cmp_neigh(const Neighbour& first, const Neighbour& second) //компара
 		return false;
 }
 
-bool isExist(vector<Top> vector, char tmp) //проверяет вхождение веришны в вектор
+bool isExist(vector<Top>& vector, char tmp) //проверяет вхождение веришны в вектор
 {
 	for (size_t i = 0; i < vector.size(); i++)
 		if (vector[i].symbol == tmp)
@@ -47,7 +47,7 @@ bool isExist(vector<Top> vector, char tmp) //проверяет вхождени
 	return false;
 }
 
-int findIndexTop(vector<Top> vector, char tmp) //находит индекс вершины в векторе
+int findIndexTop(vector<Top>& vector, char tmp) //находит индекс вершины в векторе
 {
 	for (size_t i = 0; i < vector.size(); i++)
 		if (tmp == vector[i].symbol)
@@ -63,7 +63,7 @@ int findIndexNeigh(Top top, char tmp) //находит индекс соседа
 	}
 	return -1;
 }
-void init_Graph(size_t N) {
+void init_Graph(size_t N, vector <Top>& tops) {
 	char  curTop, endTop; //начальная и конечная вершины
 	int bandwidth, index; //пропускная способность
 	for (size_t i = 0; i < N; i++) {         
@@ -87,8 +87,9 @@ void init_Graph(size_t N) {
 	}
 }
 
-int maxFlowCount(vector <Top> tops, Top estr)  //  считает максимальный поток в сквозном пути
+int maxFlowCount(const vector <Top>& tops, Top estr)  //  считает максимальный поток в сквозном пути
 {   
+	cout << endl;
 	cout << "Calculating the maximum flow." << endl;
 	int flow, min, indexPrev, indexCur; // промежуточный поток, максимальный поток, индекс текущей и предыдущей вершины
 	min = 10000;//недостижимый минимум
@@ -109,8 +110,9 @@ int maxFlowCount(vector <Top> tops, Top estr)  //  считает максима
 	return min;       // возвращаем минимальную пропускную способность сквозного пути
 }
 
-void recountFlow(vector <Top>& tops, Top estr, int maxFlow)  // производит пересчет потока по сквозному пути
+void recountFlow( vector <Top>& tops, Top estr, int maxFlow)  // производит пересчет потока по сквозному пути
 {     
+	cout << endl;
 	cout << "Start of recalculation flow:" << endl;
 	int indexCur, indexPrev, indexNeighCur, indexNeighPrev; //индекс текущей и предыдущей вершины, соседа текущей и сосеода предыдущей вершины
 	Top cur = estr;                                      // текущая вершина - сток
@@ -138,7 +140,7 @@ void recountFlow(vector <Top>& tops, Top estr, int maxFlow)  // производ
 	}
 }
 
-void Priority(int& index, Top cur) { //рассчитываем приоитет вершин
+void Priority(int& index, Top cur,const vector <Top>& viewingTop) { //рассчитываем приоитет вершин
 	int priority, min; //мин приоритет, промежуточный приоритет
 	bool flag; //флаг для определения расположения символа относительно начала алфавита
 	for (size_t i = 0; i < cur.neighbours.size(); i++) {   // перебор соседей текущей вершины
@@ -160,7 +162,7 @@ void Priority(int& index, Top cur) { //рассчитываем приоитет
 	}
 }
 
-int FordFalk(char source, char estr) { //поиск максимального потока и пересчет пропускных способностей вершин
+int FordFalk(char source, char estr, vector <Top>& tops, vector <Top>& viewingTop) { //поиск максимального потока и пересчет пропускных способностей вершин
 	int i = findIndexTop(tops, source);//находим индекс истока
 	tops[i].prevTop = '0';//устанавливаем пред символ у истока
 	Top cur = tops[i];        // текущая вершина - исток
@@ -172,16 +174,19 @@ int FordFalk(char source, char estr) { //поиск максимального �
 	cout << endl;
 	while (true) { //пока не найдем макс поток
 		int index_min = 10000; //недостижимый минимум
-		Priority(index_min, cur); //выбираем вершины по приоритету
+		Priority(index_min, cur,viewingTop); //выбираем вершины по приоритету
 		if (index_min != 10000) {// если нашли соседа
 			cout << "Priority vertex:" << cur.neighbours[index_min].symbol << endl;
 			i = findIndexTop(tops, cur.neighbours[index_min].symbol);				// находим его индекс в векторе вершин
 			tops[i].prevTop = cur.symbol;                                    // предыдущая вершина соседа это текущая вершина
 			cur = tops[i];                                                      // сосед становится текущей вершиной
-			viewingTop.push_back(cur);											//помещается в вектор просмотренных вершин
-			cout << "Viewing Tops:";
+			viewingTop.push_back(cur);	//помещается в вектор просмотренных вершин
+			cout << endl;
 			for (size_t i = 0; i < viewingTop.size(); i++)
-				cout << viewingTop[i].symbol << ' ';
+				cout << "i=" << i << endl;
+			cout << "Viewing tops:";
+			for (size_t j = 0; j < viewingTop.size(); j++)
+				cout << viewingTop[j].symbol << ' ';
 			cout << endl;
 			if (cur.symbol == estr) {                      // если дошли до стока
 				cout << "The current vertex is a estuary." << endl;
@@ -223,6 +228,7 @@ int FordFalk(char source, char estr) { //поиск максимального �
 
 int main()
 {
+	vector <Top> tops, viewingTop;
 	size_t N;
 	char source, estr;
 	cout << "Enter information about the graph:" << endl;
@@ -230,13 +236,14 @@ int main()
 	cin >> source;//исток
 	cin >> estr;//сток
 	int max = 0; //макс поток
-	init_Graph(N);// заполняем граф
+	init_Graph(N,tops);// заполняем граф
 	cout << "Beginning of the algorithm:" << endl;
-	max = FordFalk(source, estr);//находим макс поток
+	max = FordFalk(source, estr,tops,viewingTop);//находим макс поток
 	sort(tops.begin(), tops.end(), cmp_top);        //сортируем вершины графа                          
 	for (size_t i = 0; i < tops.size(); ++i) {
 		sort(tops[i].neighbours.begin(), tops[i].neighbours.end(), cmp_neigh); //сортируем соседей каждой вершины
 	}
+	cout << endl;
 	cout << "Result:" << endl; //выводим результат работы
 	cout << max << endl;
 	for (size_t i = 0; i < tops.size(); i++) {
