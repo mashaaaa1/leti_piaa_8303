@@ -1,0 +1,26 @@
+Test:
+1.
+7 
+a 
+f 
+a b 7 
+a c 6
+b d 6 
+c f 9 
+d e 3 
+d f 4 
+e c 2
+2.
+10 
+a 
+h 
+a b 5 
+a c 4 
+a d 1 
+b g 1 
+c e 2 
+c f 3 
+d e 6 
+e h 4 
+f h 4 
+g h 8
