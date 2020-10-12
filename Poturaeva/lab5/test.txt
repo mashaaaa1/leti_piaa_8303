@@ -1,0 +1,32 @@
+Test 1 programm:
+1.
+NANNNANNANAN
+2
+NAN
+A
+2.
+ACACGTNNNNAGT
+3
+G
+AG
+NNN
+Test 2 programm:
+1.
+ACTANCA
+A$$A$
+$
+2.
+ACACAGGAGA
+A%A
+%
+Test 3 programm:
+1.
+NANNNANNANAN
+NXN
+X
+N
+2.
+ACACAGGAGA
+A%A
+%
+G
