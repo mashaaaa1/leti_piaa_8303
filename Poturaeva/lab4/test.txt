@@ -1,0 +1,23 @@
+Test KMP:
+1.
+sas
+fasawsasdsasasa
+1
+2.
+abab
+asababsdababsdabababab
+4
+3.
+as
+abjkhgtipahggsyop
+3
+Test cyclic:
+1.
+aaa
+aaaa
+2.
+aaba
+abaa
+3.
+afdafd
+dafdaf
