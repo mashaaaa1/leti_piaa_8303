@@ -3,26 +3,27 @@
 #include <map>
 #include <set>
 #include <queue>
+#include <algorithm>
 
 class Edge {
 public:
-    char start;//исток
-    char end;//сток
-    int weight;//вес
+    char start;//РёСЃС‚РѕРє
+    char end;//СЃС‚РѕРє
+    int weight;//РІРµСЃ
     
 };
 
 class Graph {
 public:
-    bool isEdge(char u, char v) {//существует ли ребро
+    bool isEdge(char u, char v) {//СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё СЂРµР±СЂРѕ
         return this->data[u].count(v);
     }
 
-    void addEdge(char u, char v, int w) {//добавляем ребро
+    void addEdge(char u, char v, int w) {//РґРѕР±Р°РІР»СЏРµРј СЂРµР±СЂРѕ
         this->data[u][v] = w;
     }
 
-    std::vector<Edge> getEdges(char u) {//получить ребра выходящие из вершины
+    std::vector<Edge> getEdges(char u) {//РїРѕР»СѓС‡РёС‚СЊ СЂРµР±СЂР° РІС‹С…РѕРґСЏС‰РёРµ РёР· РІРµСЂС€РёРЅС‹
         std::vector<Edge> edgesFromU;
         for (auto nextEdge : this->data[u]) {
             edgesFromU.push_back(Edge({ u, nextEdge.first, nextEdge.second }));
@@ -31,15 +32,15 @@ public:
     }
 
 
-    int getValue(char u, char v) {//вес ребра
+    int getValue(char u, char v) {//РІРµСЃ СЂРµР±СЂР°
         return this->data[u][v];
     }
 
-    void addValue(char u, char v, int value) {//добавить вес
+    void addValue(char u, char v, int value) {//РґРѕР±Р°РІРёС‚СЊ РІРµСЃ
         this->data[u][v] += value;
     }
 
-    void print() {//выводит ребра графа в консоль
+    void print() {//РІС‹РІРѕРґРёС‚ СЂРµР±СЂР° РіСЂР°С„Р° РІ РєРѕРЅСЃРѕР»СЊ
         for (auto& in : data) {
             for (auto& to : in.second) {
                 std::cout << in.first << ' ' << to.first << ' ' << to.second << '\n';
@@ -55,102 +56,102 @@ public:
         return false;
     }
 private:
-    std::map<char, std::map<char, int>> data;//список смежности для графа
+    std::map<char, std::map<char, int>> data;//СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё РґР»СЏ РіСЂР°С„Р°
 };
 
 
 
 
-void read_graph(Graph* graph, std::set<std::pair<char, char>>& edges, int n) {//считываем граф
+void read_graph(Graph* graph, std::set<std::pair<char, char>>& edges, int n) {//СЃС‡РёС‚С‹РІР°РµРј РіСЂР°С„
     char u, v;
     int w;
     for (int i = 0; i < n; i++) {
         std::cin >> u >> v >> w;
         edges.insert({ u,v });
-        graph->addEdge(u, v, w); // прямое ребро
+        graph->addEdge(u, v, w); // РїСЂСЏРјРѕРµ СЂРµР±СЂРѕ
         if (!graph->isEdge(v, u)) {
-            graph->addEdge(v, u, 0); // обратное
+            graph->addEdge(v, u, 0); // РѕР±СЂР°С‚РЅРѕРµ
         }
     }
 }
 
-bool bfs(Graph* graph, int start, int finish, std::map<char, char>& parents) {//поиск в ширину
-    std::queue<char> q;//очередь вершин
+bool bfs(Graph* graph, int start, int finish, std::map<char, char>& parents) {//РїРѕРёСЃРє РІ С€РёСЂРёРЅСѓ
+    std::queue<char> q;//РѕС‡РµСЂРµРґСЊ РІРµСЂС€РёРЅ
     q.push(start);
-    parents[start] = start;//путь
+    parents[start] = start;//РїСѓС‚СЊ
     char v;
     auto cmp{
         [&graph](Edge a, Edge b) {
         return graph->cmp(a,b); }
     };
-    while (!q.empty()) {//пока очередь не пуста
-        v = q.front();//берем первую вершину
-        q.pop();//убираем из очереди
+    while (!q.empty()) {//РїРѕРєР° РѕС‡РµСЂРµРґСЊ РЅРµ РїСѓСЃС‚Р°
+        v = q.front();//Р±РµСЂРµРј РїРµСЂРІСѓСЋ РІРµСЂС€РёРЅСѓ
+        q.pop();//СѓР±РёСЂР°РµРј РёР· РѕС‡РµСЂРµРґРё
         std::vector<Edge> vec = graph->getEdges(v);
         std::sort(vec.begin(), vec.end(), cmp);
-        for (Edge edge : graph->getEdges(v)) {//проходим по всем ребрам вершины
-            char to = edge.end;// вершина обрабатываемая
-            int w = edge.weight;//вес
-            if (parents.count(to) == 0 && w > 0) {//если в пути еще нет этой вершины и вес больше 0
-                q.push(to);//помещаем в очередь
-                parents[to] = v;//увеличиваем путь
-                if (to == finish) break;//если дошли до стока
+        for (Edge edge : graph->getEdges(v)) {//РїСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј СЂРµР±СЂР°Рј РІРµСЂС€РёРЅС‹
+            char to = edge.end;// РІРµСЂС€РёРЅР° РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјР°СЏ
+            int w = edge.weight;//РІРµСЃ
+            if (parents.count(to) == 0 && w > 0) {//РµСЃР»Рё РІ РїСѓС‚Рё РµС‰Рµ РЅРµС‚ СЌС‚РѕР№ РІРµСЂС€РёРЅС‹ Рё РІРµСЃ Р±РѕР»СЊС€Рµ 0
+                q.push(to);//РїРѕРјРµС‰Р°РµРј РІ РѕС‡РµСЂРµРґСЊ
+                parents[to] = v;//СѓРІРµР»РёС‡РёРІР°РµРј РїСѓС‚СЊ
+                if (to == finish) break;//РµСЃР»Рё РґРѕС€Р»Рё РґРѕ СЃС‚РѕРєР°
             }
         }
-        if (parents.count(finish)) break;//если дошли до стока
+        if (parents.count(finish)) break;//РµСЃР»Рё РґРѕС€Р»Рё РґРѕ СЃС‚РѕРєР°
     }
     return !q.empty();
 }
 
-int minWeightOnCurrentPath(Graph* graph, std::map<char, char>& parents, char finish) {//ищем мин пропускную способность в увеличивающем пути
-    char prevVert = finish;//начинаем со стока
-    char curVert = parents[prevVert];//предок стока
-    int weight = graph->getValue(curVert, prevVert);//вес ребра
-    std::vector<char> path;//путь
+int minWeightOnCurrentPath(Graph* graph, std::map<char, char>& parents, char finish) {//РёС‰РµРј РјРёРЅ РїСЂРѕРїСѓСЃРєРЅСѓСЋ СЃРїРѕСЃРѕР±РЅРѕСЃС‚СЊ РІ СѓРІРµР»РёС‡РёРІР°СЋС‰РµРј РїСѓС‚Рё
+    char prevVert = finish;//РЅР°С‡РёРЅР°РµРј СЃРѕ СЃС‚РѕРєР°
+    char curVert = parents[prevVert];//РїСЂРµРґРѕРє СЃС‚РѕРєР°
+    int weight = graph->getValue(curVert, prevVert);//РІРµСЃ СЂРµР±СЂР°
+    std::vector<char> path;//РїСѓС‚СЊ
     path.push_back(finish);
-    while (prevVert != curVert) {//пока не дошли до истока
+    while (prevVert != curVert) {//РїРѕРєР° РЅРµ РґРѕС€Р»Рё РґРѕ РёСЃС‚РѕРєР°
         path.push_back(curVert);
-        weight = std::min(weight, graph->getValue(curVert, prevVert));//выбираем минимум
-        curVert = parents[curVert];//переходим к след вершине
+        weight = std::min(weight, graph->getValue(curVert, prevVert));//РІС‹Р±РёСЂР°РµРј РјРёРЅРёРјСѓРј
+        curVert = parents[curVert];//РїРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґ РІРµСЂС€РёРЅРµ
         prevVert = parents[prevVert];
     }
     std::cout << "Found new available path\n";
-    for (auto i = path.rbegin(); i != path.rend(); i++) {//увеличивающий путь
+    for (auto i = path.rbegin(); i != path.rend(); i++) {//СѓРІРµР»РёС‡РёРІР°СЋС‰РёР№ РїСѓС‚СЊ
         std::cout << (*i) << ' ';
     }
-    std::cout << '\n' << "minimum weight on the path is " << weight << "\n";//мин элемент
+    std::cout << '\n' << "minimum weight on the path is " << weight << "\n";//РјРёРЅ СЌР»РµРјРµРЅС‚
     return weight;
 }
 
 void changeWeights(Graph* graph, std::map<char, char>& parents, char finish,
-    int flow, std::map<std::pair<char, char>, int>& answer) {//изменеие весов в графе
-    char prevVert = finish;//начианем со стока
+    int flow, std::map<std::pair<char, char>, int>& answer) {//РёР·РјРµРЅРµРёРµ РІРµСЃРѕРІ РІ РіСЂР°С„Рµ
+    char prevVert = finish;//РЅР°С‡РёР°РЅРµРј СЃРѕ СЃС‚РѕРєР°
     char curVert = parents[prevVert];
-    while (prevVert != curVert) {//пока не дошли до итсока
-        graph->addValue(curVert, prevVert, -flow);//отнимаем поток в сторону стока
-        answer[{curVert, prevVert}] += flow;//прибавляем к  ответу
-        graph->addValue(prevVert, curVert, flow);//прибавляем поток в сторону истока
-        curVert = parents[curVert];//след вершина
+    while (prevVert != curVert) {//РїРѕРєР° РЅРµ РґРѕС€Р»Рё РґРѕ РёС‚СЃРѕРєР°
+        graph->addValue(curVert, prevVert, -flow);//РѕС‚РЅРёРјР°РµРј РїРѕС‚РѕРє РІ СЃС‚РѕСЂРѕРЅСѓ СЃС‚РѕРєР°
+        answer[{curVert, prevVert}] += flow;//РїСЂРёР±Р°РІР»СЏРµРј Рє  РѕС‚РІРµС‚Сѓ
+        graph->addValue(prevVert, curVert, flow);//РїСЂРёР±Р°РІР»СЏРµРј РїРѕС‚РѕРє РІ СЃС‚РѕСЂРѕРЅСѓ РёСЃС‚РѕРєР°
+        curVert = parents[curVert];//СЃР»РµРґ РІРµСЂС€РёРЅР°
         prevVert = parents[prevVert];
     }
-    graph->print();//печать графа
+    graph->print();//РїРµС‡Р°С‚СЊ РіСЂР°С„Р°
     std::cout << '\n';
 }
 
-void fordFulkerson(Graph* graph, int& maxFlow, char start, char finish, std::map<std::pair<char, char>, int>& answer) {//запуск алгоритма
-    bool isWayExist = true;//есть ли путь
-    while (isWayExist) {//пока есть путь
-        std::map<char, char> parents;//путь
-        isWayExist = bfs(graph, start, finish, parents);//ищем путь
-        if (isWayExist) {//если нашли
-            int flow = minWeightOnCurrentPath(graph, parents, finish);//ищем мин поток
-            maxFlow += flow;//прибавляем к макс потоку
-            changeWeights(graph, parents, finish, flow, answer);//пересчет пропускных способностей
+void fordFulkerson(Graph* graph, int& maxFlow, char start, char finish, std::map<std::pair<char, char>, int>& answer) {//Р·Р°РїСѓСЃРє Р°Р»РіРѕСЂРёС‚РјР°
+    bool isWayExist = true;//РµСЃС‚СЊ Р»Рё РїСѓС‚СЊ
+    while (isWayExist) {//РїРѕРєР° РµСЃС‚СЊ РїСѓС‚СЊ
+        std::map<char, char> parents;//РїСѓС‚СЊ
+        isWayExist = bfs(graph, start, finish, parents);//РёС‰РµРј РїСѓС‚СЊ
+        if (isWayExist) {//РµСЃР»Рё РЅР°С€Р»Рё
+            int flow = minWeightOnCurrentPath(graph, parents, finish);//РёС‰РµРј РјРёРЅ РїРѕС‚РѕРє
+            maxFlow += flow;//РїСЂРёР±Р°РІР»СЏРµРј Рє РјР°РєСЃ РїРѕС‚РѕРєСѓ
+            changeWeights(graph, parents, finish, flow, answer);//РїРµСЂРµСЃС‡РµС‚ РїСЂРѕРїСѓСЃРєРЅС‹С… СЃРїРѕСЃРѕР±РЅРѕСЃС‚РµР№
         }
     }
 }
 
-void writeAnswer(std::set<std::pair<char, char>>& edges, std::map<std::pair<char, char>, int> answer, int maxFlow) {//вывод ответа
+void writeAnswer(std::set<std::pair<char, char>>& edges, std::map<std::pair<char, char>, int> answer, int maxFlow) {//РІС‹РІРѕРґ РѕС‚РІРµС‚Р°
     std::cout << maxFlow << '\n';
     for (auto edge : edges) {
         char u = edge.first;
@@ -166,21 +167,21 @@ void writeAnswer(std::set<std::pair<char, char>>& edges, std::map<std::pair<char
 }
 
 int main() {
-    // ввод данных
+    // РІРІРѕРґ РґР°РЅРЅС‹С…
     int n;
-    std::cin >> n;//количество вершин
-    char start, finish;//исток и сток
+    std::cin >> n;//РєРѕР»РёС‡РµСЃС‚РІРѕ РІРµСЂС€РёРЅ
+    char start, finish;//РёСЃС‚РѕРє Рё СЃС‚РѕРє
     std::cin >> start >> finish;
 
     auto* graph = new Graph;
-    std::set<std::pair<char, char>> edges;//ребра графа
-    read_graph(graph, edges, n);//считывание графа
+    std::set<std::pair<char, char>> edges;//СЂРµР±СЂР° РіСЂР°С„Р°
+    read_graph(graph, edges, n);//СЃС‡РёС‚С‹РІР°РЅРёРµ РіСЂР°С„Р°
 
     int maxFlow = 0;
-    std::map<std::pair<char, char>, int> answer;//ответ
-    fordFulkerson(graph, maxFlow, start, finish, answer);//запуск алгоритма
+    std::map<std::pair<char, char>, int> answer;//РѕС‚РІРµС‚
+    fordFulkerson(graph, maxFlow, start, finish, answer);//Р·Р°РїСѓСЃРє Р°Р»РіРѕСЂРёС‚РјР°
 
-    writeAnswer(edges, answer, maxFlow);//вывод ответа
+    writeAnswer(edges, answer, maxFlow);//РІС‹РІРѕРґ РѕС‚РІРµС‚Р°
 
     delete graph;
 }
