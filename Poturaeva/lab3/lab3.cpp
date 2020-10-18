@@ -3,7 +3,6 @@
 #include <map>
 #include <set>
 #include <queue>
-#include <algorithm>
 
 class Edge {
 public:
@@ -76,6 +75,7 @@ void read_graph(Graph* graph, std::set<std::pair<char, char>>& edges, int n) {//
 }
 
 bool bfs(Graph* graph, int start, int finish, std::map<char, char>& parents) {//поиск в ширину
+    std::cout << "Start of BFS:" << std::endl;
     std::queue<char> q;//очередь вершин
     q.push(start);
     parents[start] = start;//путь
@@ -85,20 +85,38 @@ bool bfs(Graph* graph, int start, int finish, std::map<char, char>& parents) {//
         return graph->cmp(a,b); }
     };
     while (!q.empty()) {//пока очередь не пуста
+
         v = q.front();//берем первую вершину
+        std::cout << "Current vertex:" << v << std::endl;
         q.pop();//убираем из очереди
+        std::cout << "Edges before sorting:" << std::endl;
         std::vector<Edge> vec = graph->getEdges(v);
+        for (int i = 0; i < vec.size(); i++) {
+            std::cout << vec[i].start << " " << vec[i].end << " " << vec[i].weight << std::endl;
+        }
+        std::cout << "Edges after sorting with individualization:" << std::endl;
         std::sort(vec.begin(), vec.end(), cmp);
-        for (Edge edge : graph->getEdges(v)) {//проходим по всем ребрам вершины
+        for (int i = 0; i < vec.size(); i++) {
+            std::cout << vec[i].start << " " << vec[i].end << " " << vec[i].weight << std::endl;
+        }
+        for (Edge edge : vec) {//проходим по всем ребрам вершины
             char to = edge.end;// вершина обрабатываемая
             int w = edge.weight;//вес
             if (parents.count(to) == 0 && w > 0) {//если в пути еще нет этой вершины и вес больше 0
+
                 q.push(to);//помещаем в очередь
                 parents[to] = v;//увеличиваем путь
-                if (to == finish) break;//если дошли до стока
+                std::cout << "Adding an edge (" << v << "," << to << ") to the increasing path." << std::endl;
+                if (to == finish) {
+                    std::cout << "Current vertex is source!" << std::endl;
+                    break;//если дошли до стока
+                }
             }
         }
-        if (parents.count(finish)) break;//если дошли до стока
+            if (parents.count(finish)) {
+                std::cout << "Current vertex is source!" << std::endl;
+                break;
+            }//если дошли до стока
     }
     return !q.empty();
 }
@@ -179,9 +197,12 @@ int main() {
 
     int maxFlow = 0;
     std::map<std::pair<char, char>, int> answer;//ответ
+    std::cout << "Start Ford-Fulkerson algorithm:" << std::endl;
     fordFulkerson(graph, maxFlow, start, finish, answer);//запуск алгоритма
 
     writeAnswer(edges, answer, maxFlow);//вывод ответа
 
     delete graph;
 }
+
+
