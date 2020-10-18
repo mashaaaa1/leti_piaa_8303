@@ -57,7 +57,7 @@ void prefixFunction(std::string& p, std::vector<size_t>& pi) {
 
 }
 
-void KMP(std::string& t, std::string& p, size_t flowCount, bool isShift) {//функция для поиска шаблонов в тексте
+void KMP(std::string& t, std::string& p, size_t flowCount, bool isForShift) {//функция для поиска шаблонов в тексте
 
     vector<size_t> res;//результат
     vector<size_t> pi(p.size());//значения префикс функции
@@ -114,10 +114,12 @@ void KMP(std::string& t, std::string& p, size_t flowCount, bool isShift) {//фу
                 i++;
                 j++;
                 if (j == p.size()) {//нашли вхождение
-
-                    cout << "Ciclic shift found:" << endl;
-                    cout << i- p.length();
-                    return;
+                    res.push_back(i - p.size());
+                    isFound = true;
+                    if(isForShift){
+                       cout << "Ciclic shift found: i  - p.size(), i="<<i<<" ,size= "<<p.size() << endl;
+                        break;
+                    }
 
                 }
             }
@@ -132,9 +134,24 @@ void KMP(std::string& t, std::string& p, size_t flowCount, bool isShift) {//фу
             }
         }
         cout << endl ;
+        if(isFound == false && f == flowCount - 1 && res.empty()){
+            cout << "It is not cyclic shift" << endl;
+            cout<<-1<<endl;
+            return;
+        }
     }
-    cout << "It is not cyclic shift" << endl;
-    cout << "-1 ";
+    if(res.empty()){
+        cout << "It is not cyclic shift" << endl;
+        cout<<-1<<endl;
+        return;
+    }
+
+    string sep = "";
+    for(auto &el : res){
+        cout << sep << el;
+        sep = ",";
+    }
+    
     return;
 }
     
@@ -144,13 +161,13 @@ void cyclicShift(std::string& strA, std::string& strB, size_t flowCount) {
     
     if (strA == strB) {
         cout << "Strings are equal" << endl;
-        
+        cout<<0<<endl;
         return;
     }
     
     if (strA.size() != strB.size()) {
         cout << "Strings have different size" << endl;
-        
+        cout<<-1<<endl;
         return;
     }
     strA += strA;
@@ -171,3 +188,5 @@ int main()
     cyclicShift(t, p, flowCount);
     return 0;
 }
+
+
