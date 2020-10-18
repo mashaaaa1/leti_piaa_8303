@@ -72,6 +72,7 @@ std::vector<int> answer;
 std::vector<int> jockersPos;//позиции джокера
 char joker;
 std::vector<Vertex> bohr;
+std::string buff;
 void createBorh();
 int getSuffLink(int ind);
 int getLink(int ind, char c);
@@ -107,7 +108,6 @@ void createBorh() {
     bool flag = false;
     int counter = 0;
     bohr.push_back(root);
-    std::string buff;
     std::cout << "Type pattern:\n";
     std::cin >> buff;
     strSize = buff.length();
@@ -226,32 +226,19 @@ void ahoKorasik(std::string& text, std::vector<int>& counterArr) {//алгори
         }
     }
     std::cout << "Start algorithm...\nCurrent vertex is root.\n";
-    for (unsigned int i = 0; i < text.length(); i++) { 
-      
+    for (unsigned int i = 0; i < text.length(); i++) { //проходимся по тексту
         std::cout << "\nTransition by symbol \'" << text[i] << "\' with index " << i << "\n";
-        curr = getLink(curr, text[i]); //получение ссылки
+        curr = getLink(curr, text[i]); //куда можем перейти по символу
         std::cout << "----------------------------\nEntry check...\n";
-        if (curr == 0) {//если это корень
-            if (text[i] == notJoker) {//и не джокер
-                std::cout << "Found non jocker, decreasing elements in counter arr...\n";
-                decrease(counterArr, i);//уменьшаем значение в индексе
-            }
-        }
-        for (int j = curr; j != 0; j = getSuffLink(j)) { //пока не дошли до корня
-            int indInText = i + 1 - bohr[j].deep;
-            if (bohr[j].isLeaf) {
-                std::cout << "Vertex is leaf, sub-str found, ";
-                std::cout << "Increasing elements in counter arr...\n";
-                increase(counterArr, indInText, j);//увеличиваем значение в индексе
-                if (text[i] == notJoker) {//если не джокер
-                    std::cout << "Found non jocker, decreasing elements in counter arr...\n";
-                    decrease(counterArr, indInText);//уменьшаем
-                }
-            }
-            else {
-                if (text[i] == notJoker) {
-                    std::cout << "Found non jocker, decreasing elements in counter arr...\n";
-                    decrease(counterArr, indInText);
+        for (int j = curr; j != 0; j = getSuffLink(j)) { //пока не дойдем до корня
+            if (bohr[j].isLeaf) {//если в конце шаблона
+                int indInText = i + 1 - bohr[j].deep;//индекс в тексте
+                std::cout << "Vertex is leaf, sub-str found, increasing counter arr...\n";
+                for (unsigned int k = 0; k < bohr[j].pos.size(); k++) {
+                    if (indInText - bohr[j].pos[k] >= 0) {//если в пределах текста
+                        std::cout << "Increasing " << indInText - bohr[j].pos[k] << " element by one, it is " << counterArr[indInText - bohr[j].pos[k]] + 1 << " now." << "\n";
+                        counterArr[indInText - bohr[j].pos[k]] += 1;//увеличиваем значение вхождений в этом индексе
+                    }
                 }
             }
         }
@@ -261,31 +248,23 @@ void ahoKorasik(std::string& text, std::vector<int>& counterArr) {//алгори
     for (unsigned int i = 0; i < counterArr.size(); i++) {
         std::cout << counterArr[i] << " ";
     }
+    bool is_correct = true;
     std::cout << "\n\nPositions of template are:\n";
-    for (unsigned int i = 0; i < counterArr.size() - strSize + 1; i++) {
+    for (unsigned int i = 0; i < counterArr.size(); i++) {
         if (counterArr[i] == tmp) {
+            for (int k = i; k < i + strSize; k++) {
+                if (buff[k - i] && text[k] == notJoker && buff[k - i] == joker) {
+                    is_correct = false;
+                    std::cout << "Element i= " << i << " has notJoker" << std::endl;
+                    break;
+                }
+            }
+            if(is_correct)
             std::cout << i + 1 << "\n";
+            is_correct = true;
         }
     }
 
 }
 
-
-void decrease(std::vector<int>& counterArr, int indInText) {//уменьшение
-    for (unsigned int k = 0; k < jockersPos.size(); k++) {
-        if ((indInText - jockersPos[k] >= 0)) {
-            std::cout << "\tDecreasing " << indInText - jockersPos[k] << " element by one, it is " << counterArr[indInText - jockersPos[k]] + 1 << " now." << "\n";
-            counterArr[indInText - jockersPos[k]] -= 1;
-        }
-    }
-}
-
-void increase(std::vector<int>& counterArr, int indInText, int j) {//увеличение
-    for (unsigned int k = 0; k < bohr[j].pos.size(); k++) {
-        if (indInText - bohr[j].pos[k] >= 0) {
-            std::cout << "\tIncreasing " << indInText - bohr[j].pos[k] << " element by one, it is " << counterArr[indInText - bohr[j].pos[k]] + 1 << " now." << "\n";
-            counterArr[indInText - bohr[j].pos[k]] += 1;
-        }
-    }
-}
 
