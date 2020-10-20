@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 #include <queue>
-
+#include <algorithm>
 class Edge {
 public:
     char start;//исток
