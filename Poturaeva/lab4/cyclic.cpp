@@ -185,7 +185,7 @@ int main()
     cin >> p;//шаблон
     cin >> t;//текст
     cin >> flowCount;//потоки
-    cyclicShift(t, p, flowCount);
+    cyclicShift(p, t, flowCount);
     return 0;
 }
 
