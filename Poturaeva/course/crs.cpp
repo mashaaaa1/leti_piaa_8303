@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <vector>
@@ -51,7 +51,7 @@ public:
             cout << "Wrong value for edges, enter number again:" << endl;
             cin >> edges;
         }
-
+        int i, j;
         int tmp = 0;
         cout << "If you want to enter the graph manually - press '1', if you want to generate a graph - press '2'. " << endl;
         cin >> tmp;
@@ -59,6 +59,15 @@ public:
 
         for (int i = 0; i < N; i++) // создание каждого одномерного массива в динамическом двумерном массиве, или иначе - создание столбцов размерность n
             matrix[i] = new int[N];
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                matrix[i][j] = -1;
+                if (i == j)
+                    matrix[i][j] = 0;
+            }
+        }
+
         if (tmp == 2) {
             const int R_MIN = -1;
             const int R_MAX = 50;
@@ -74,14 +83,6 @@ public:
             }
 
 
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    matrix[i][j] = -1;
-                    if (i == j)
-                        matrix[i][j] = 0;
-                }
-            }
-
             for (int i = 0; i < edges; i++) {
                 int k = rand() % (N);
                 int j = rand() % (N);
@@ -96,8 +97,8 @@ public:
         }
         else if (tmp == 1) {
             cout << "Fill in the adjacency matrix:" << endl;
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++)
+            for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++)
                 {
                     cout << "matrix[" << i << "][" << j << "] = ";
                     cin >> matrix[i][j];
