@@ -71,7 +71,6 @@ public:
         if (tmp == 2) {
             const int R_MIN = -1;
             const int R_MAX = 50;
-            int i, j;
             int* randomArray = new int[edges];
             srand(time(NULL));
 
@@ -96,14 +95,23 @@ public:
             }
         }
         else if (tmp == 1) {
-            cout << "Fill in the adjacency matrix:" << endl;
+            printf("Enter the edges: vertex 1 vertex 2 weight\n");
+            for (int k = 0; k < edges; k++) {
+                int  m, n, weight;
+                printf("%i) edge: ", k + 1);
+                scanf("%i %i %i", &m, &n, &weight);
+                n--; m--;
+                matrix[m][n] = weight;
+            }
+            /*cout << "Fill in the adjacency matrix:";
             for (i = 0; i < N; i++) {
                 for (j = 0; j < N; j++)
                 {
-                    cout << "matrix[" << i << "][" << j << "] = ";
+                    cout << endl << "matrix[" << i << "][" << j << "] = ";
                     cin >> matrix[i][j];
+                    //cout << endl;
                 }
-            }
+            }*/
         }
     }
 
