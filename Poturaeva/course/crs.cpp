@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
+#include <tchar.h>
 using namespace std;
 class Graph
 {
@@ -29,8 +31,8 @@ public:
         for (k = 0; k < N; k++) {
             for (i = 0; i < N; i++) {
                 for (j = 0; j < N; j++) {
-                    if (matrix[i][k] <= 0 || matrix[k][j] <= 0 || matrix[i][j] == -1) continue;
-                    if ((matrix[i][k] + matrix[k][j] < matrix[i][j] || matrix[i][j] == 0) && (i != j)) {
+                    if (matrix[i][k] <= 0 || matrix[k][j] <= 0 ) continue;
+                    if ((matrix[i][k] + matrix[k][j] < matrix[i][j] || matrix[i][j] == -1) && (i != j)) {
                         matrix[i][j] = matrix[i][k] + matrix[k][j];
                     }
                 }
@@ -51,13 +53,12 @@ public:
             cout << "Wrong value for edges, enter number again:" << endl;
             cin >> edges;
         }
-        int i, j;
         int tmp = 0;
         cout << "If you want to enter the graph manually - press '1', if you want to generate a graph - press '2'. " << endl;
         cin >> tmp;
         matrix = new int* [N];
 
-        for (int i = 0; i < N; i++) // создание каждого одномерного массива в динамическом двумерном массиве, или иначе - создание столбцов размерность n
+        for (int i = 0; i < N; i++) 
             matrix[i] = new int[N];
 
         for (int i = 0; i < N; i++) {
@@ -72,7 +73,7 @@ public:
             const int R_MIN = -1;
             const int R_MAX = 50;
             int* randomArray = new int[edges];
-            srand(time(NULL));
+            srand((unsigned)time(NULL));
 
             for (int i = 0; i < edges; i++) {
                 randomArray[i] = rand() % (R_MAX - R_MIN + 1) + R_MIN;
@@ -99,28 +100,19 @@ public:
             for (int k = 0; k < edges; k++) {
                 int  m, n, weight;
                 printf("%i) edge: ", k + 1);
-                scanf("%i %i %i", &m, &n, &weight);
+                scanf_s("%i %i %i", &m, &n, &weight);
                 n--; m--;
                 matrix[m][n] = weight;
             }
-            /*cout << "Fill in the adjacency matrix:";
-            for (i = 0; i < N; i++) {
-                for (j = 0; j < N; j++)
-                {
-                    cout << endl << "matrix[" << i << "][" << j << "] = ";
-                    cin >> matrix[i][j];
-                    //cout << endl;
-                }
-            }*/
         }
     }
 
     void Print(bool flag) {
         FILE* f;
         if (flag)
-            f = fopen("before.txt", "w");
+            f=fopen("before.txt", "w");
         else
-            f = fopen("after.txt", "w");
+            f=fopen("after.txt", "w");
         fprintf(f, "[\\]");
         for (int i = 0; i < N; ++i)
             fprintf(f, "[%d] ", i);
